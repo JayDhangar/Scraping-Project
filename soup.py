@@ -1,18 +1,27 @@
+from flask import Flask, jsonify
 import requests
 from bs4 import BeautifulSoup
 
-url="https://stxaviersbhopal.org/"
+app = Flask(__name__)
 
-r=requests.get(url)
-soup =BeautifulSoup(r.text,"html")
+@app.route("/testimonials")
+def get_testimonials():
+    url = "https://stxaviersbhopal.org/"
+    r = requests.get(url)
+    soup = BeautifulSoup(r.text, "html.parser")
 
+    data = []
+    for t in soup.find_all("div", class_="testimonial"):
+        title = t.find("h3", class_="title")
+        desc = t.find("p", class_="description")
+        if title and desc:
+            data.append({
+                "title": title.get_text(strip=True),
+                "description": desc.get_text(strip=True)
+            })
 
-testimonials = soup.find_all("div", class_="testimonial")
+    return jsonify(data)
 
-for t in testimonials:
-    title=t.find("h3",class_="title")
-    desc=t.find("p",class_="description")
+if __name__ == "__main__":
+    app.run()
 
-    if title and desc:
-        print(title.get_text())
-        print(desc.get_text())
