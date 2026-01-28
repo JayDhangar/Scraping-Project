@@ -4,6 +4,10 @@ from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 
+@app.route("/")
+def home():
+    return "App is running"
+
 @app.route("/testimonials")
 def get_testimonials():
     url = "https://stxaviersbhopal.org/"
